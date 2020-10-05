@@ -1,7 +1,10 @@
-﻿using CV19.ViewModels.Base;
+﻿using CV19.Infrastructure.Commands;
+using CV19.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
+using System.Windows.Input;
 
 namespace CV19.ViewModels
 {
@@ -29,7 +32,7 @@ namespace CV19.ViewModels
 
         #endregion
 
-        #region Status : string - Статус программы
+        #region Статус программы
 
         ///<summary>Статус программы</summary>
         private string _Status = "Готов!";
@@ -40,7 +43,39 @@ namespace CV19.ViewModels
             get => _Status; 
             set => Set(ref _Status, value); 
         }
-        
+
         #endregion
+
+        #region Команды
+
+        #region CloseApplicationCommand
+
+        // Свойство в которое мы помещаем команду
+        public ICommand CloseApplicationCommand { get; }
+
+
+        // В данном случае команда будет доступна для выполнения всегда, поэтому возвращаем true
+        private bool CanCloseApplicationCommandExecute(object p) => true;
+
+        // Этот метод будет выполняться, когда команда выполняется
+        private void OnCloseApplicationCommandExecuted(object p)
+        {
+            Application.Current.Shutdown();
+        }
+
+        #endregion
+
+        #endregion
+
+        public MainWindowViewModel()
+        {
+            #region Команды
+
+            CloseApplicationCommand = new LambdaCommand(
+                OnCloseApplicationCommandExecuted,
+                CanCloseApplicationCommandExecute);
+
+            #endregion
+        }
     }
 }
