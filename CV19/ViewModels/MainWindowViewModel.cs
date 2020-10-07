@@ -11,6 +11,21 @@ namespace CV19.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
+
+        #region SelectedPageIndex : int - Номер выбранной вкладки
+
+        ///<summary>Номер выбранной вкладки</summary>
+        private int _SelectedPageIndex;
+
+        ///<summary>Номер выбранной вкладки</summary>
+        public int SelectedPageIndex
+        {
+            get => _SelectedPageIndex;
+            set => Set(ref _SelectedPageIndex, value);
+        }
+
+        #endregion
+
         #region TestDataPoints : IEnumerable<DataPoint> - Тестовый набор данных для визуализации графиков
 
         ///<summary>Тестовый набор данных для визуализации графиков</summary>
@@ -80,15 +95,28 @@ namespace CV19.ViewModels
 
         #endregion
 
+        #region ChangeTabIndexCommand
+
+        public ICommand ChangeTabIndexCommand { get; }
+
+        private bool CanChangeTabIndexCommandExexute(object p) => _SelectedPageIndex >= 0;
+
+        private void OnChangeTabIndexCommandExecuted(object p)
+        {
+            if (p is null) return;
+            SelectedPageIndex += Convert.ToInt32(p);
+        }
+
+        #endregion
+
         #endregion
 
         public MainWindowViewModel()
         {
             #region Команды
 
-            CloseApplicationCommand = new LambdaCommand(
-                OnCloseApplicationCommandExecuted,
-                CanCloseApplicationCommandExecute);
+            CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
+            ChangeTabIndexCommand = new LambdaCommand(OnChangeTabIndexCommandExecuted, CanChangeTabIndexCommandExexute);
 
             #endregion
 
