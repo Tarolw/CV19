@@ -54,7 +54,7 @@ namespace CV19Console
                 var line = data_reader.ReadLine();
                 // Проверяем, что строка не пуста, если пуста, то делаем след. цикл
                 if (string.IsNullOrWhiteSpace(line)) continue;
-                yield return line;
+                yield return line.Replace("Korea,", "Korea -").Replace("Bonaire,", "Bonaire -");
             }
         }
 
@@ -76,6 +76,32 @@ namespace CV19Console
 
            
 
+        /*Теперь будем получать данные по количеству зараженных по каждой стране,
+         * и каждой провинции этой страны, для этого создадим еще один метод, 
+         * который будет возращать также перечисление.
+         */
+
+
+
+        // Извлекаем данные в виде кортежа
+        private static IEnumerable<(string Country, string Province, int[] Counts)> GetData()
+        {
+            // Извлекаем общие данные, отбрасываем первую строку (заголовок)
+            var lines = GetDataLines()
+                .Skip(1) // Отбрасываем первую строку (заголовок)
+                .Select(line => line.Split(',')); // Разбиваем строки по разделителю ",", получаем перечисление массивов строк, где каждый элемент это колонка (ячейка таблицы)
+          
+            // Преобразовываем данные в нужный нам кортеж
+            foreach (var row in lines)
+            {
+                // Сначала выделим все данные в переменные, а потом разгруппируем в кортеж и вернем его
+                var province = row[0].Trim();
+                var country_name = row[1].Trim(' ', '"');
+                var counts = row.Skip(4).Select(int.Parse).ToArray();
+
+                yield return (country_name, province, counts);
+            }
+        }
 
 
 
@@ -94,9 +120,13 @@ namespace CV19Console
             //    Console.WriteLine(data_line);
             //}
 
-            var dates = GetDates();
+            //var dates = GetDates();
 
-            Console.WriteLine(string.Join("\r\n", dates));
+            //Console.WriteLine(string.Join("\r\n", dates));
+
+            var russia_data = GetData().First(v => v.Country.Equals("Russia", StringComparison.OrdinalIgnoreCase));
+
+            Console.WriteLine(string.Join("\r\n", GetDates().Zip(russia_data.Counts, (date, count) => $"Дата: {date:dd:MM:yy.} - Заражений: {count}")));
 
             Console.ReadLine();
         }
