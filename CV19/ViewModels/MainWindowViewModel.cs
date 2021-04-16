@@ -3,8 +3,10 @@ using CV19.Models;
 using CV19.ViewModels.Base;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CV19.ViewModels
@@ -15,13 +17,13 @@ namespace CV19.ViewModels
         #region SelectedPageIndex : int - Номер выбранной вкладки
 
         ///<summary>Номер выбранной вкладки</summary>
-        private int _SelectedPageIndex;
+        private int _selectedPageIndex;
 
         ///<summary>Номер выбранной вкладки</summary>
         public int SelectedPageIndex
         {
-            get => _SelectedPageIndex;
-            set => Set(ref _SelectedPageIndex, value);
+            get => _selectedPageIndex;
+            set => Set(ref _selectedPageIndex, value);
         }
 
         #endregion
@@ -99,7 +101,7 @@ namespace CV19.ViewModels
 
         public ICommand ChangeTabIndexCommand { get; }
 
-        private bool CanChangeTabIndexCommandExexute(object p) => _SelectedPageIndex >= 0;
+        private bool CanChangeTabIndexCommandExexute(object p) => !(_selectedPageIndex == 0 && Convert.ToInt32(p)==-1)&&!(_selectedPageIndex == 5 && Convert.ToInt32(p)==1);
 
         private void OnChangeTabIndexCommandExecuted(object p)
         {
